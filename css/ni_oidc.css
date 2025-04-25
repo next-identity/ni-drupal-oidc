@@ -5,7 +5,9 @@
 
 .ni-oidc-login-button,
 .ni-oidc-register-button {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 10px 15px;
   margin: 5px 0;
   border-radius: 4px;
@@ -39,6 +41,12 @@
   text-decoration: none;
 }
 
+.ni-oidc-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+}
+
 /* Styling for the callback URL input field in admin form */
 .ni-oidc-callback-url {
   background-color: #f5f5f5;
@@ -49,4 +57,28 @@
   border: 1px solid #ddd;
   width: 100%;
   max-width: 600px;
+}
+
+/* Styling for the admin settings form */
+.ni-oidc-settings-logo {
+  float: right;
+  max-width: 200px;
+  margin-left: 20px;
+  margin-bottom: 20px;
+}
+
+/* Button preview section in admin settings */
+.ni-oidc-button-preview {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+}
+
+.button-preview-item {
+  margin-bottom: 10px;
+}
+
+.button-preview-item:last-child {
+  margin-bottom: 0;
 } 

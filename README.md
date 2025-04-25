@@ -10,9 +10,11 @@ The Next Identity Drupal module provides seamless integration with Next Identity
 - Automatic display of callback URL for easy configuration on the Next Identity side
 - Support for login, registration, and profile editing redirects
 - User account creation and synchronization with Next Identity profiles
-- Customizable login and registration buttons
+- Customizable login and registration buttons with Next Identity branding
 - Drupal role assignment for users authenticated through Next Identity
 - Clean logout process with proper session termination
+- Option to use Next Identity favicon for your Drupal site
+- Blocks to easily place Next Identity login/register buttons anywhere on your site
 
 ## Requirements
 
@@ -50,6 +52,11 @@ The Next Identity Drupal module provides seamless integration with Next Identity
 3. **Button Settings**
    - **Login Button Text**: Customize the text displayed on the login button
    - **Register Button Text**: Customize the text displayed on the register button
+   - **Preview**: See how your buttons will look with the Next Identity branding
+
+4. **Advanced Settings**
+   - **User Info Endpoint**: Optional override for the user info endpoint
+   - **Use Next Identity favicon**: Option to replace your site's favicon with the Next Identity favicon
 
 ## Usage
 
@@ -74,6 +81,17 @@ $register_button = [
   '#text' => t('Register with Next Identity'),
 ];
 ```
+
+### Using the Next Identity Login Block
+
+The module provides a block that can be placed in any region of your site:
+
+1. Go to Structure > Block layout
+2. Click "Place block" in your desired region
+3. Find "Next Identity Login" in the list and add it
+4. Configure block settings as needed and save
+
+The block will automatically display login and registration buttons to anonymous users, and will be hidden for authenticated users.
 
 ### Programmatic Authentication
 

@@ -31,6 +31,14 @@ class SettingsForm extends ConfigFormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config('ni_oidc.settings');
 
+    // Add the Next Identity logo to the form
+    $module_path = \Drupal::service('extension.list.module')->getPath('ni_oidc');
+    $logo_path = $module_path . '/images/Next_Identity_Logo_Black.svg';
+    $form['logo'] = [
+      '#markup' => '<img src="/' . $logo_path . '" alt="Next Identity" class="ni-oidc-settings-logo" />',
+      '#weight' => -100,
+    ];
+
     $form['provider_settings'] = [
       '#type' => 'details',
       '#title' => $this->t('Next Identity Provider Settings'),
@@ -125,6 +133,27 @@ class SettingsForm extends ConfigFormBase {
       '#default_value' => $config->get('register_button_text') ?: $this->t('Register with Next Identity'),
     ];
 
+    // Show preview of buttons
+    $login_icon = '/' . $module_path . '/images/Next_Identity_Icon_White.svg';
+    $register_icon = '/' . $module_path . '/images/Next_Identity_Icon_Black.svg';
+    
+    $form['button_settings']['button_preview'] = [
+      '#type' => 'container',
+      '#attributes' => ['class' => ['ni-oidc-button-preview']],
+    ];
+    
+    $form['button_settings']['button_preview']['heading'] = [
+      '#markup' => '<h4>' . $this->t('Button Preview') . '</h4>',
+    ];
+    
+    $form['button_settings']['button_preview']['login'] = [
+      '#markup' => '<div class="button-preview-item"><a href="#" class="ni-oidc-login-button button button--primary"><img src="' . $login_icon . '" alt="Next Identity" class="ni-oidc-icon"><span>' . $config->get('login_button_text') . '</span></a></div>',
+    ];
+    
+    $form['button_settings']['button_preview']['register'] = [
+      '#markup' => '<div class="button-preview-item"><a href="#" class="ni-oidc-register-button button"><img src="' . $register_icon . '" alt="Next Identity" class="ni-oidc-icon"><span>' . $config->get('register_button_text') . '</span></a></div>',
+    ];
+
     $form['advanced'] = [
       '#type' => 'details',
       '#title' => $this->t('Advanced Settings'),
@@ -137,6 +166,14 @@ class SettingsForm extends ConfigFormBase {
       '#description' => $this->t('Override the default userinfo endpoint. Leave empty to use the one from discovery.'),
       '#default_value' => $config->get('userinfo_endpoint'),
       '#required' => FALSE,
+    ];
+
+    // Add favicon link to Drupal site if module is enabled
+    $form['advanced']['use_favicon'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Use Next Identity favicon'),
+      '#description' => $this->t('Replace the default Drupal favicon with the Next Identity favicon.'),
+      '#default_value' => $config->get('use_favicon') ?? FALSE,
     ];
 
     return parent::buildForm($form, $form_state);
@@ -167,7 +204,8 @@ class SettingsForm extends ConfigFormBase {
       ->set('user_roles', $form_state->getValue('user_roles'))
       ->set('login_button_text', $form_state->getValue('login_button_text'))
       ->set('register_button_text', $form_state->getValue('register_button_text'))
-      ->set('userinfo_endpoint', $form_state->getValue('userinfo_endpoint'));
+      ->set('userinfo_endpoint', $form_state->getValue('userinfo_endpoint'))
+      ->set('use_favicon', $form_state->getValue('use_favicon'));
 
     // Only update the client secret if a new one was provided
     if ($form_state->getValue('client_secret')) {

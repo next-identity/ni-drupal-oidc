@@ -6,8 +6,12 @@
  * Available variables:
  * - text: The button text.
  * - url: The URL to redirect to.
+ * - icon_path: Path to the Next Identity icon.
  *
  * @ingroup themeable
  */
 #}
-<a href="{{ url }}" class="ni-oidc-login-button button button--primary">{{ text }}</a> 
+<a href="{{ url }}" class="ni-oidc-login-button button button--primary">
+  <img src="{{ icon_path }}" alt="Next Identity" class="ni-oidc-icon">
+  <span>{{ text }}</span>
+</a> 
