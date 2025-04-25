@@ -130,6 +130,47 @@ if ($user_info) {
 
 ## Troubleshooting
 
+### Required Dependencies
+
+If clicking the login or register buttons redirects to `/ni-oidc/authorize` with no OIDC parameters or returns an error, make sure you have the following PHP extensions installed and enabled:
+
+1. **PHP cURL Extension**: Required for making HTTP requests to the identity provider
+   ```
+   # For Debian/Ubuntu
+   sudo apt-get install php-curl
+   
+   # For RHEL/CentOS
+   sudo yum install php-curl
+   ```
+
+2. **PHP JSON Extension**: Required for parsing OIDC responses
+   ```
+   # For Debian/Ubuntu
+   sudo apt-get install php-json
+   
+   # For RHEL/CentOS
+   sudo yum install php-json
+   ```
+
+3. **Restart your web server** after installing these extensions:
+   ```
+   # For Apache
+   sudo systemctl restart apache2
+   
+   # For Nginx with PHP-FPM
+   sudo systemctl restart php-fpm
+   sudo systemctl restart nginx
+   ```
+
+Additionally, you can enable detailed PHP error logging in your Drupal settings.php file to help diagnose issues:
+
+```php
+// Add to settings.php
+error_reporting(E_ALL);
+ini_set('display_errors', TRUE);
+ini_set('display_startup_errors', TRUE);
+```
+
 ### Redirect Error (/ni-oidc/authorize path returns error)
 
 If clicking the login or register buttons leads to an error at `/ni-oidc/authorize` or `/en/ni-oidc/authorize`, this typically indicates that the module cannot connect to the Next Identity provider. Follow these steps to resolve the issue:

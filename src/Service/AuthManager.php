@@ -140,8 +140,15 @@ class AuthManager {
 
     try {
       $well_known_url = $provider_url . '/.well-known/openid-configuration';
+      $this->loggerFactory->notice('Attempting to discover OIDC configuration from: @url', ['@url' => $well_known_url]);
+      
       $response = $this->httpClient->request('GET', $well_known_url);
       $this->endpoints = json_decode((string) $response->getBody(), TRUE);
+      
+      // Log the discovered endpoints for debugging
+      $this->loggerFactory->notice('Successfully discovered OIDC configuration: @endpoints', [
+        '@endpoints' => print_r($this->endpoints, TRUE)
+      ]);
       
       // Override userinfo endpoint if configured
       $userinfo_endpoint = $this->config->get('userinfo_endpoint');
@@ -152,7 +159,24 @@ class AuthManager {
       return $this->endpoints;
     }
     catch (RequestException $e) {
-      $this->loggerFactory->error('Failed to discover OIDC configuration: @error', ['@error' => $e->getMessage()]);
+      $error_message = $e->getMessage();
+      $this->loggerFactory->error('Failed to discover OIDC configuration: @error', ['@error' => $error_message]);
+      
+      // More detailed error logging
+      if ($e->hasResponse()) {
+        $body = (string) $e->getResponse()->getBody();
+        $status_code = $e->getResponse()->getStatusCode();
+        $this->loggerFactory->error('Response status code: @code, body: @body', [
+          '@code' => $status_code,
+          '@body' => $body
+        ]);
+      } else {
+        $this->loggerFactory->error('No response from server. This may indicate network connectivity issues or incorrect provider URL.');
+      }
+      
+      // This is likely a configuration or connectivity issue
+      $this->messenger->addError(t('Unable to connect to the Identity Provider. Please check your configuration and ensure the provider is accessible.'));
+      
       return [];
     }
   }
@@ -428,7 +452,27 @@ class AuthManager {
    */
   public function getCallbackUrl() {
     global $base_url;
-    return $base_url . '/ni-oidc/callback';
+    
+    // Get the current language prefix if language module is enabled
+    $language_prefix = '';
+    if (\Drupal::moduleHandler()->moduleExists('language')) {
+      $language_manager = \Drupal::languageManager();
+      $current_language = $language_manager->getCurrentLanguage()->getId();
+      
+      // Only add prefix for non-default languages if using path prefix
+      $config = \Drupal::config('language.negotiation');
+      $prefixes = $config->get('url.prefixes');
+      
+      if (!empty($prefixes[$current_language])) {
+        $language_prefix = '/' . $prefixes[$current_language];
+      }
+    }
+    
+    // Log the callback URL we're generating
+    $callback_url = $base_url . $language_prefix . '/ni-oidc/callback';
+    $this->loggerFactory->notice('Generated callback URL: @url', ['@url' => $callback_url]);
+    
+    return $callback_url;
   }
 
   /**
