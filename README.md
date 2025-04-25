@@ -1,8 +1,8 @@
-# Next Identity OIDC
+# Next Identity Drupal Module: Authentication via OIDC
 
 ## Overview
 
-Next Identity OIDC is a Drupal module that provides seamless integration with Next Identity authentication services via OpenID Connect (OIDC) protocol. This module allows your Drupal site to delegate authentication to Next Identity, a powerful Customer Identity and Access Management (CIAM) provider.
+The Next Identity Drupal module provides seamless integration with Next Identity authentication services via OpenID Connect (OIDC) protocol. This module allows your Drupal site to delegate authentication to Next Identity, a powerful Customer Identity and Access Management (CIAM) provider. Next Identity provides no-code CIAM orchestration and passwordless options such as Passkeys. NI can also orchestrate authentication between any additional auth provider, allowing you to have a fully unified login capability for your site or suite of sites. 
 
 ## Features
 
