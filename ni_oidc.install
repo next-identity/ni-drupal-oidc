@@ -1,0 +1,48 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the Next Identity OIDC module.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function ni_oidc_install() {
+  // Ensure the module's default configuration is set
+  $config = \Drupal::configFactory()->getEditable('ni_oidc.settings');
+  if (!$config->get('scopes')) {
+    $config->set('scopes', 'openid profile email');
+  }
+  if (!$config->get('auto_register')) {
+    $config->set('auto_register', TRUE);
+  }
+  if (!$config->get('login_button_text')) {
+    $config->set('login_button_text', t('Log in with Next Identity'));
+  }
+  if (!$config->get('register_button_text')) {
+    $config->set('register_button_text', t('Register with Next Identity'));
+  }
+  $config->save();
+  
+  \Drupal::messenger()->addStatus(t('Next Identity OIDC module has been installed. <a href=":url">Configure the module settings</a> to connect to your Next Identity provider.', [
+    ':url' => '/admin/config/people/ni-oidc',
+  ]));
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function ni_oidc_uninstall() {
+  // Remove the module's configuration
+  \Drupal::configFactory()->getEditable('ni_oidc.settings')->delete();
+}
+
+/**
+ * Implements hook_schema().
+ */
+function ni_oidc_schema() {
+  // We're using the user.data service to store user mappings
+  // This is just a placeholder for schema updates if needed later
+  return [];
+} 

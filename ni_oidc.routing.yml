@@ -1,0 +1,47 @@
+ni_oidc.settings:
+  path: '/admin/config/people/ni-oidc'
+  defaults:
+    _form: '\Drupal\ni_oidc\Form\SettingsForm'
+    _title: 'Next Identity OIDC Settings'
+  requirements:
+    _permission: 'administer site configuration'
+
+ni_oidc.authorize:
+  path: '/ni-oidc/authorize'
+  defaults:
+    _controller: '\Drupal\ni_oidc\Controller\AuthController::authorize'
+    _title: 'Authorize with Next Identity'
+  requirements:
+    _permission: 'access content'
+
+ni_oidc.callback:
+  path: '/ni-oidc/callback'
+  defaults:
+    _controller: '\Drupal\ni_oidc\Controller\AuthController::callback'
+    _title: 'Authentication Callback'
+  requirements:
+    _access: 'TRUE'
+
+ni_oidc.logout:
+  path: '/ni-oidc/logout'
+  defaults:
+    _controller: '\Drupal\ni_oidc\Controller\AuthController::logout'
+    _title: 'Logout'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+ni_oidc.register:
+  path: '/ni-oidc/register'
+  defaults:
+    _controller: '\Drupal\ni_oidc\Controller\AuthController::register'
+    _title: 'Register with Next Identity'
+  requirements:
+    _permission: 'access content'
+
+ni_oidc.edit_profile:
+  path: '/ni-oidc/edit-profile'
+  defaults:
+    _controller: '\Drupal\ni_oidc\Controller\AuthController::editProfile'
+    _title: 'Edit Profile'
+  requirements:
+    _user_is_logged_in: 'TRUE' 

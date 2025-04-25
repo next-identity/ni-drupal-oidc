@@ -1,0 +1,52 @@
+/**
+ * @file
+ * Styles for Next Identity OIDC module.
+ */
+
+.ni-oidc-login-button,
+.ni-oidc-register-button {
+  display: inline-block;
+  padding: 10px 15px;
+  margin: 5px 0;
+  border-radius: 4px;
+  text-decoration: none;
+  text-align: center;
+  font-weight: 600;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.ni-oidc-login-button {
+  background-color: #1e88e5;
+  color: white;
+  border: 1px solid #1e88e5;
+}
+
+.ni-oidc-login-button:hover {
+  background-color: #1565c0;
+  color: white;
+  text-decoration: none;
+}
+
+.ni-oidc-register-button {
+  background-color: #f5f5f5;
+  color: #333;
+  border: 1px solid #ccc;
+}
+
+.ni-oidc-register-button:hover {
+  background-color: #e0e0e0;
+  color: #333;
+  text-decoration: none;
+}
+
+/* Styling for the callback URL input field in admin form */
+.ni-oidc-callback-url {
+  background-color: #f5f5f5;
+  color: #666;
+  font-family: monospace;
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  width: 100%;
+  max-width: 600px;
+} 

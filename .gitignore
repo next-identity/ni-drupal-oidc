@@ -1,0 +1,26 @@
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Drupal specific
+/vendor/
+/web/
+/docroot/
+/.editorconfig
+/.gitattributes
+
+# Environment specific
+.env
+.env.*
+!.env.example 

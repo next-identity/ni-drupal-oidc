@@ -1,0 +1,11 @@
+ni_oidc:
+  version: 1.x
+  css:
+    theme:
+      css/ni_oidc.css: {}
+  js:
+    js/ni_oidc.js: {}
+  dependencies:
+    - core/drupal
+    - core/jquery
+    - core/once 

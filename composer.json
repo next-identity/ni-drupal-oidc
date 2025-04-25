@@ -1,0 +1,22 @@
+{
+  "name": "drupal/ni_oidc",
+  "description": "Integrates Drupal with Next Identity authentication using OpenID Connect (OIDC) protocol.",
+  "type": "drupal-module",
+  "keywords": ["Drupal", "Authentication", "OpenID Connect", "OIDC", "Next Identity", "SSO"],
+  "license": "GPL-2.0-or-later",
+  "homepage": "https://www.drupal.org/project/ni_oidc",
+  "authors": [
+    {
+      "name": "Next Identity Team",
+      "role": "Maintainer"
+    }
+  ],
+  "require": {
+    "drupal/core": "^9 || ^10",
+    "ext-json": "*"
+  },
+  "support": {
+    "issues": "https://www.drupal.org/project/issues/ni_oidc",
+    "source": "https://git.drupalcode.org/project/ni_oidc"
+  }
+} 

@@ -1,0 +1,56 @@
+<?php
+
+/**
+ * @file
+ * Contains ni_oidc.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function ni_oidc_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.ni_oidc':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('The Next Identity OIDC module integrates Drupal with Next Identity authentication service using OpenID Connect protocol.') . '</p>';
+      $output .= '<p>' . t('This module provides the ability to log in, register, and edit user profiles using Next Identity as the identity provider.') . '</p>';
+      $output .= '<h3>' . t('Configuration') . '</h3>';
+      $output .= '<p>' . t('Configure the module at <a href=":url">Next Identity OIDC settings</a>.', [':url' => '/admin/config/people/ni-oidc']) . '</p>';
+      return $output;
+  }
+}
+
+/**
+ * Implements hook_page_attachments().
+ */
+function ni_oidc_page_attachments(array &$attachments) {
+  $config = \Drupal::config('ni_oidc.settings');
+  
+  // Only add JS if the module is properly configured
+  if ($config->get('provider_url') && $config->get('client_id')) {
+    $attachments['#attached']['library'][] = 'ni_oidc/ni_oidc';
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function ni_oidc_theme() {
+  return [
+    'ni_oidc_login_button' => [
+      'variables' => [
+        'text' => t('Log in with Next Identity'),
+        'url' => NULL,
+      ],
+    ],
+    'ni_oidc_register_button' => [
+      'variables' => [
+        'text' => t('Register with Next Identity'),
+        'url' => NULL,
+      ],
+    ],
+  ];
+} 

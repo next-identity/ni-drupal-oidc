@@ -1,0 +1,8 @@
+name: Next Identity OIDC
+type: module
+description: 'Integrates Drupal with Next Identity using OpenID Connect protocol for authentication.'
+package: Authentication
+core_version_requirement: ^9 || ^10
+configure: ni_oidc.settings
+dependencies:
+  - drupal:user 
