@@ -1,4 +1,4 @@
-# Next Identity Drupal Module: Authentication via OIDC
+# Next Identity Drupal Module: OpenID Connect
 
 ## Overview
 
