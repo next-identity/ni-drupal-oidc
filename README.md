@@ -1,3 +1,6 @@
+![Next Identity Logo](images/Next_Identity_Logo_White.svg)
+# 
+
 # Next Identity Drupal Module: OpenID Connect
 
 ## Overview
@@ -127,12 +130,54 @@ if ($user_info) {
 
 ## Troubleshooting
 
-If you encounter issues with the module:
+### Redirect Error (/ni-oidc/authorize path returns error)
+
+If clicking the login or register buttons leads to an error at `/ni-oidc/authorize` or `/en/ni-oidc/authorize`, this typically indicates that the module cannot connect to the Next Identity provider. Follow these steps to resolve the issue:
+
+1. **Verify Provider Configuration**:
+   - Ensure that the Provider URL is correct (e.g., `https://auth.nextidentity.com`) with no trailing slash
+   - Verify your Client ID and Client Secret are correct
+   - Enable Drupal logging and check for specific error messages related to OpenID Connect discovery
+
+2. **OIDC Discovery Document Access**:
+   - The module attempts to access the OIDC discovery document at `[provider_url]/.well-known/openid-configuration`
+   - Verify this URL is accessible by visiting it directly in your browser
+   - If you can't access it, contact your Next Identity provider to ensure the service is available
+
+3. **Redirect URI Configuration**:
+   - Ensure the Callback URL shown in the module settings is registered as an authorized redirect URI in your Next Identity application settings
+   - The exact URL that appears in the "Callback URL" field must be registered without any modifications
+
+4. **HTTPS Requirements**:
+   - OIDC typically requires HTTPS for security. If your Drupal site is using HTTP, you may encounter issues
+   - For production, ensure your site uses HTTPS
+   - For development, you might need to adjust the Next Identity provider settings to allow non-HTTPS redirects
+
+5. **Language Prefix Handling**:
+   - If you're using language prefixes in URLs (e.g., `/en/ni-oidc/authorize`), ensure the Callback URL registered with Next Identity includes this prefix
+   - You may need to register multiple callback URLs for each language prefix your site uses
+
+6. **Check Network Connectivity**:
+   - Ensure your server can connect to the Next Identity provider
+   - Check for firewall rules or network restrictions that might block outgoing connections
+
+7. **Debug with Drupal Logs**:
+   - Enable Drupal logging and check for errors in Reports > Recent log messages
+   - Look for entries from the 'ni_oidc' channel that might provide more specific error details
+
+8. **Check for Timeout Issues**:
+   - If the connection to the Next Identity provider is slow, it might time out
+   - Adjust PHP timeout settings if necessary
+
+### Other Common Issues
+
+If you encounter other issues with the module:
 
 1. **Check Configuration**: Ensure that the Provider URL, Client ID, and Client Secret are correct.
 2. **Verify Callback URL**: Confirm that the callback URL is properly registered in your Next Identity application settings.
 3. **Enable Logging**: Check the Drupal logs for any error messages related to the OIDC authentication process.
 4. **Check Scopes**: Ensure that the requested scopes are allowed for your Next Identity application.
+5. **Clear Caches**: Clear Drupal caches after making configuration changes.
 
 ## Credits
 

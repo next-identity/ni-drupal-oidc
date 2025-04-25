@@ -33,24 +33,6 @@ function ni_oidc_page_attachments(array &$attachments) {
   if ($config->get('provider_url') && $config->get('client_id')) {
     $attachments['#attached']['library'][] = 'ni_oidc/ni_oidc';
   }
-  
-  // Add the Next Identity favicon if enabled
-  if ($config->get('use_favicon')) {
-    $module_path = \Drupal::service('extension.list.module')->getPath('ni_oidc');
-    $favicon_path = '/' . $module_path . '/images/Next_Identity-favicon.png';
-    
-    $attachments['#attached']['html_head'][] = [
-      [
-        '#tag' => 'link',
-        '#attributes' => [
-          'rel' => 'shortcut icon',
-          'href' => $favicon_path,
-          'type' => 'image/png',
-        ],
-      ],
-      'ni_oidc_favicon',
-    ];
-  }
 }
 
 /**
@@ -71,20 +53,4 @@ function ni_oidc_theme() {
       ],
     ],
   ];
-}
-
-/**
- * Implements hook_preprocess_HOOK().
- */
-function ni_oidc_preprocess_ni_oidc_login_button(&$variables) {
-  $module_path = \Drupal::service('extension.list.module')->getPath('ni_oidc');
-  $variables['icon_path'] = '/' . $module_path . '/images/Next_Identity_Icon_White.svg';
-}
-
-/**
- * Implements hook_preprocess_HOOK().
- */
-function ni_oidc_preprocess_ni_oidc_register_button(&$variables) {
-  $module_path = \Drupal::service('extension.list.module')->getPath('ni_oidc');
-  $variables['icon_path'] = '/' . $module_path . '/images/Next_Identity_Icon_Black.svg';
 } 

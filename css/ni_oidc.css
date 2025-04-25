@@ -41,12 +41,6 @@
   text-decoration: none;
 }
 
-.ni-oidc-icon {
-  width: 20px;
-  height: 20px;
-  margin-right: 8px;
-}
-
 /* Styling for the callback URL input field in admin form */
 .ni-oidc-callback-url {
   background-color: #f5f5f5;
