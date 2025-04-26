@@ -36,13 +36,16 @@ function ni_oidc_install() {
 function ni_oidc_uninstall() {
   // Remove the module's configuration
   \Drupal::configFactory()->getEditable('ni_oidc.settings')->delete();
+  
+  // Remove the user data mappings
+  \Drupal::service('user.data')->delete('ni_oidc');
 }
 
 /**
  * Implements hook_schema().
  */
 function ni_oidc_schema() {
-  // We're using the user.data service to store user mappings
-  // This is just a placeholder for schema updates if needed later
+  // We use the user.data service to store user mappings
+  // rather than adding fields to the user entity.
   return [];
 } 

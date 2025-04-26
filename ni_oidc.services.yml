@@ -5,4 +5,4 @@ services:
   
   ni_oidc.user_mapper:
     class: Drupal\ni_oidc\Service\UserMapper
-    arguments: ['@config.factory', '@entity_type.manager', '@logger.factory', '@user.data'] 
+    arguments: ['@config.factory', '@entity_type.manager', '@logger.factory', '@user.data', '@password_generator'] 

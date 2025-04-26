@@ -5,6 +5,7 @@ namespace Drupal\ni_oidc\Service;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
+use Drupal\Core\Password\PasswordGeneratorInterface;
 use Drupal\user\UserDataInterface;
 use Drupal\user\Entity\User;
 
@@ -42,6 +43,13 @@ class UserMapper {
   protected $userData;
 
   /**
+   * The password generator service.
+   *
+   * @var \Drupal\Core\Password\PasswordGeneratorInterface
+   */
+  protected $passwordGenerator;
+
+  /**
    * Constructs a new UserMapper.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
@@ -52,17 +60,21 @@ class UserMapper {
    *   The logger factory.
    * @param \Drupal\user\UserDataInterface $user_data
    *   The user data service.
+   * @param \Drupal\Core\Password\PasswordGeneratorInterface $password_generator
+   *   The password generator service.
    */
   public function __construct(
     ConfigFactoryInterface $config_factory,
     EntityTypeManagerInterface $entity_type_manager,
     LoggerChannelFactoryInterface $logger_factory,
-    UserDataInterface $user_data
+    UserDataInterface $user_data,
+    PasswordGeneratorInterface $password_generator
   ) {
     $this->config = $config_factory->get('ni_oidc.settings');
     $this->entityTypeManager = $entity_type_manager;
     $this->loggerFactory = $logger_factory->get('ni_oidc');
     $this->userData = $user_data;
+    $this->passwordGenerator = $password_generator;
   }
 
   /**
@@ -104,15 +116,7 @@ class UserMapper {
    *   The Drupal user entity if found, FALSE otherwise.
    */
   public function findUserBySub($sub) {
-    $users = $this->entityTypeManager->getStorage('user')->loadByProperties([
-      'ni_oidc_sub' => $sub,
-    ]);
-    
-    if (!empty($users)) {
-      return reset($users);
-    }
-
-    // If we couldn't find by custom field, try user data
+    // Look for the user using the userData service
     $uids = $this->userData->get('ni_oidc', NULL, 'sub_' . md5($sub));
     if (!empty($uids)) {
       foreach ($uids as $uid => $value) {
@@ -152,16 +156,16 @@ class UserMapper {
     $user = User::create([
       'name' => $name,
       'mail' => $user_info['email'] ?? '',
-      'pass' => user_password(),
+      'pass' => $this->passwordGenerator->generate(),
       'status' => 1,
     ]);
     
     // Set user fields based on the user info
-    if (isset($user_info['given_name'])) {
+    if (isset($user_info['given_name']) && $user->hasField('field_first_name')) {
       $user->set('field_first_name', $user_info['given_name']);
     }
     
-    if (isset($user_info['family_name'])) {
+    if (isset($user_info['family_name']) && $user->hasField('field_last_name')) {
       $user->set('field_last_name', $user_info['family_name']);
     }
     
@@ -170,12 +174,6 @@ class UserMapper {
     
     // Store the sub ID in user data
     $this->userData->set('ni_oidc', $user->id(), 'sub_' . md5($user_info['sub']), $user_info['sub']);
-    
-    // Try also saving in a custom field if it exists
-    if ($user->hasField('ni_oidc_sub')) {
-      $user->set('ni_oidc_sub', $user_info['sub']);
-      $user->save();
-    }
     
     // Assign roles to the new user
     $this->assignRoles($user);

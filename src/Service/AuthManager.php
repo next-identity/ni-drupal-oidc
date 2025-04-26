@@ -8,6 +8,7 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Session\SessionManagerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Messenger\MessengerInterface;
+use Drupal\Core\Routing\TrustedRedirectResponse;
 use Drupal\user\UserDataInterface;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
@@ -302,7 +303,9 @@ class AuthManager {
     }
     
     $auth_url = $authorization_endpoint . '?' . http_build_query($query);
-    return new RedirectResponse($auth_url);
+    
+    // Must use TrustedRedirectResponse for external URLs
+    return new TrustedRedirectResponse($auth_url);
   }
 
   /**
@@ -437,7 +440,8 @@ class AuthManager {
       // $params['post_logout_redirect_uri'] = $base_url;
       
       $logout_url .= http_build_query($params);
-      return new RedirectResponse($logout_url);
+      // Must use TrustedRedirectResponse for external URLs
+      return new TrustedRedirectResponse($logout_url);
     }
     
     // Otherwise, just redirect to the homepage
