@@ -133,6 +133,20 @@ class SettingsForm extends ConfigFormBase {
       '#default_value' => $config->get('register_button_text') ?: $this->t('Register with Next Identity'),
     ];
 
+    $form['button_settings']['profile_button_text'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Profile Button Text'),
+      '#description' => $this->t('Text to display on the profile button for authenticated users'),
+      '#default_value' => $config->get('profile_button_text') ?: $this->t('My Profile'),
+    ];
+
+    $form['button_settings']['logout_button_text'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Logout Button Text'),
+      '#description' => $this->t('Text to display on the logout button for authenticated users'),
+      '#default_value' => $config->get('logout_button_text') ?: $this->t('Logout'),
+    ];
+
     // Button preview without Next Identity branding
     $form['button_settings']['button_preview'] = [
       '#type' => 'container',
@@ -149,6 +163,14 @@ class SettingsForm extends ConfigFormBase {
     
     $form['button_settings']['button_preview']['register'] = [
       '#markup' => '<div class="button-preview-item"><a href="#" class="ni-oidc-register-button button"><span>' . $config->get('register_button_text') . '</span></a></div>',
+    ];
+    
+    $form['button_settings']['button_preview']['profile'] = [
+      '#markup' => '<div class="button-preview-item"><a href="#" class="ni-oidc-profile-button button button--primary"><span>' . $config->get('profile_button_text') . '</span></a></div>',
+    ];
+    
+    $form['button_settings']['button_preview']['logout'] = [
+      '#markup' => '<div class="button-preview-item"><a href="#" class="ni-oidc-logout-button button"><span>' . $config->get('logout_button_text') . '</span></a></div>',
     ];
 
     $form['advanced'] = [
@@ -193,6 +215,8 @@ class SettingsForm extends ConfigFormBase {
       ->set('user_roles', $form_state->getValue('user_roles'))
       ->set('login_button_text', $form_state->getValue('login_button_text'))
       ->set('register_button_text', $form_state->getValue('register_button_text'))
+      ->set('profile_button_text', $form_state->getValue('profile_button_text'))
+      ->set('logout_button_text', $form_state->getValue('logout_button_text'))
       ->set('userinfo_endpoint', $form_state->getValue('userinfo_endpoint'));
 
     // Only update the client secret if a new one was provided

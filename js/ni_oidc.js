@@ -51,7 +51,7 @@
       });
 
       // Add 'active' class to buttons when clicked for better UX
-      once('ni-button-active', ['.ni-oidc-login-button', '.ni-oidc-register-button'], context).forEach(function (element) {
+      once('ni-button-active', ['.ni-oidc-login-button', '.ni-oidc-register-button', '.ni-oidc-profile-button', '.ni-oidc-logout-button'], context).forEach(function (element) {
         element.addEventListener('click', function (e) {
           this.classList.add('active');
           this.textContent = Drupal.t('Redirecting...');

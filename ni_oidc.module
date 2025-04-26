@@ -52,5 +52,17 @@ function ni_oidc_theme() {
         'url' => NULL,
       ],
     ],
+    'ni_oidc_profile_button' => [
+      'variables' => [
+        'text' => t('My Profile'),
+        'url' => NULL,
+      ],
+    ],
+    'ni_oidc_logout_button' => [
+      'variables' => [
+        'text' => t('Logout'),
+        'url' => NULL,
+      ],
+    ],
   ];
 } 

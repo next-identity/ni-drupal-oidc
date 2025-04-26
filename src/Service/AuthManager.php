@@ -9,6 +9,7 @@ use Drupal\Core\Session\SessionManagerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Routing\TrustedRedirectResponse;
+use Drupal\Core\TempStore\PrivateTempStoreFactory;
 use Drupal\user\UserDataInterface;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
@@ -76,6 +77,20 @@ class AuthManager {
   protected $messenger;
 
   /**
+   * The private tempstore factory.
+   *
+   * @var \Drupal\Core\TempStore\PrivateTempStoreFactory
+   */
+  protected $tempStoreFactory;
+
+  /**
+   * The tempstore for this module.
+   *
+   * @var \Drupal\Core\TempStore\PrivateTempStore
+   */
+  protected $tempStore;
+
+  /**
    * OIDC endpoints discovered from the provider.
    *
    * @var array
@@ -101,6 +116,8 @@ class AuthManager {
    *   The session manager.
    * @param \Drupal\Core\Messenger\MessengerInterface $messenger
    *   The messenger service.
+   * @param \Drupal\Core\TempStore\PrivateTempStoreFactory $temp_store_factory
+   *   The private tempstore factory.
    */
   public function __construct(
     ConfigFactoryInterface $config_factory,
@@ -110,7 +127,8 @@ class AuthManager {
     UserDataInterface $user_data,
     EntityTypeManagerInterface $entity_type_manager,
     SessionManagerInterface $session_manager,
-    MessengerInterface $messenger
+    MessengerInterface $messenger,
+    PrivateTempStoreFactory $temp_store_factory
   ) {
     $this->config = $config_factory->get('ni_oidc.settings');
     $this->httpClient = $http_client;
@@ -120,6 +138,8 @@ class AuthManager {
     $this->entityTypeManager = $entity_type_manager;
     $this->sessionManager = $session_manager;
     $this->messenger = $messenger;
+    $this->tempStoreFactory = $temp_store_factory;
+    $this->tempStore = $this->tempStoreFactory->get('ni_oidc');
   }
 
   /**
@@ -189,8 +209,17 @@ class AuthManager {
    *   A random string for the state parameter.
    */
   protected function generateState() {
+    // Generate a random state value
     $state = bin2hex(random_bytes(16));
-    $_SESSION['ni_oidc_state'] = $state;
+    
+    // Store it directly in tempstore using the state value itself as the key
+    // This is more reliable than using session IDs which might change during redirects
+    $this->tempStore->set('oidc_state_' . $state, TRUE);
+    
+    $this->loggerFactory->notice('Generated state parameter: @state', [
+      '@state' => $state,
+    ]);
+    
     return $state;
   }
 
@@ -204,13 +233,24 @@ class AuthManager {
    *   TRUE if the state is valid, FALSE otherwise.
    */
   protected function validateState($state) {
-    if (empty($_SESSION['ni_oidc_state']) || $state !== $_SESSION['ni_oidc_state']) {
-      $this->loggerFactory->error('Invalid state parameter in OIDC callback');
+    // Check if this state exists in tempstore
+    $key = 'oidc_state_' . $state;
+    $stored = $this->tempStore->get($key);
+    
+    $this->loggerFactory->notice('Validating state. Received: @received, Found in tempstore: @found', [
+      '@received' => $state,
+      '@found' => $stored ? 'Yes' : 'No',
+    ]);
+    
+    if (empty($stored)) {
+      $this->loggerFactory->error('Invalid state parameter in OIDC callback. State not found in tempstore: @state', [
+        '@state' => $state,
+      ]);
       return FALSE;
     }
     
-    // Clear the state from the session
-    unset($_SESSION['ni_oidc_state']);
+    // Clear the state from tempstore
+    $this->tempStore->delete($key);
     
     return TRUE;
   }
@@ -423,7 +463,7 @@ class AuthManager {
    */
   public function logout() {
     $endpoints = $this->discoverOidcConfig();
-    $id_token = $_SESSION['ni_oidc_id_token'] ?? NULL;
+    global $base_url;
     
     // Clear session data
     unset($_SESSION['ni_oidc_access_token']);
@@ -431,13 +471,15 @@ class AuthManager {
     unset($_SESSION['ni_oidc_refresh_token']);
     unset($_SESSION['ni_oidc_userinfo']);
     
-    // If end_session_endpoint is available and we have an ID token, redirect to it
-    if (!empty($endpoints['end_session_endpoint']) && !empty($id_token)) {
+    // If end_session_endpoint is available, redirect to it
+    if (!empty($endpoints['end_session_endpoint'])) {
       $logout_url = $endpoints['end_session_endpoint'] . '?';
-      $params = ['id_token_hint' => $id_token];
+      $client_id = $this->config->get('client_id');
       
-      // Add post_logout_redirect_uri if desired
-      // $params['post_logout_redirect_uri'] = $base_url;
+      $params = [
+        'client_id' => $client_id,
+        'post_logout_redirect_uri' => $base_url,
+      ];
       
       $logout_url .= http_build_query($params);
       // Must use TrustedRedirectResponse for external URLs

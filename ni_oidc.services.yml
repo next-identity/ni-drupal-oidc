@@ -1,7 +1,7 @@
 services:
   ni_oidc.auth_manager:
     class: Drupal\ni_oidc\Service\AuthManager
-    arguments: ['@config.factory', '@http_client', '@logger.factory', '@current_user', '@user.data', '@entity_type.manager', '@session_manager', '@messenger']
+    arguments: ['@config.factory', '@http_client', '@logger.factory', '@current_user', '@user.data', '@entity_type.manager', '@session_manager', '@messenger', '@tempstore.private']
   
   ni_oidc.user_mapper:
     class: Drupal\ni_oidc\Service\UserMapper
